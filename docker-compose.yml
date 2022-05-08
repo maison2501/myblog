@@ -1,0 +1,58 @@
+version: "3.3"
+
+services:
+  db:
+    platform: linux/x86_64 #M1 mac対応
+    image: mysql:8.0
+    container_name: "db"
+    build: ./docker/db
+    restart: always
+    tty: true
+    environment:
+      MYSQL_DATABASE: app_development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/db/conf.d:/etc/mysql/conf.d
+      - ./docker/db/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+
+  app:
+    container_name: "app"
+    build:
+      context: ./
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      BINDING: 0.0.0.0
+    tty: true
+    depends_on:
+      - "db"
+    command: ["./scripts/wait-for-it.sh", "db:3306", "--", "bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    volumes:
+      - .:/app
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/24
+  backend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.20.0/24

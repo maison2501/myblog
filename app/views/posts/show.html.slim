@@ -1,0 +1,35 @@
+= render partial: 'shared/page_title', locals: { page_title: @post.title }
+header.masthead
+  .container.position-relative.px-4.px-lg-5
+    .row.gx-4.gx-lg-5.justify-content-center
+      .col-md-10.col-lg-8.col-xl-7
+        .post-heading
+          h1
+            = @post.title
+          span.meta
+            = l @post.created_at, format: :long
+article.mb-4
+  .container.px-4.px-lg-5
+    .row.gx-4.gx-lg-5.justify-content-center
+      .col-md-10.col-lg-8.col-xl-7
+        / p
+        /   strong
+        /     | Category:  
+        /   - @post_tags.each do |tag|
+        /     span
+        /       = link_to tag.tag_name, tag_posts_path(tag_id: tag.id)
+        p
+          = markdown(@post.content)
+        p
+          = link_to 'Edit', edit_post_path(@post)
+        p
+          = link_to 'Destroy', @post, method: :delete, data: { confirm: 'Are you sure?' }
+/ p[style="color: green"]
+/   = notice
+/ = render partial: 'shared/page_title', locals: { page_title: @post.title }
+/ = markdown(@post.content).html_safe
+/ div
+/   = link_to "Edit this post", edit_post_path(@post)
+/   |  | 
+/   = link_to "Back to posts", posts_path
+/   = button_to "Destroy this post", @post, method: :delete
