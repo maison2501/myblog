@@ -23,7 +23,7 @@ article.mb-4
         p
           = link_to 'Edit', edit_post_path(@post)
         p
-          = link_to 'Destroy', @post, method: :delete, data: { confirm: 'Are you sure?' }
+          = button_to 'Destroy', @post, method: :delete
 / p[style="color: green"]
 /   = notice
 / = render partial: 'shared/page_title', locals: { page_title: @post.title }
