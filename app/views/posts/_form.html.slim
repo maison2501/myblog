@@ -1,40 +1,23 @@
+= javascript_import_module_tag "controllers/article"
 = form_with(model: post) do |form|
   - if post.errors.any?
-    #error_explanation
-      h2
-        = pluralize(post.errors.count, "error")
-        |  prohibited this post from being saved:
+    div[style="color: red"]
+
+    h2
+      = pluralize(post.errors.count, "error")
+      |  prohibited this post from being saved:
     ul
       - post.errors.each do |error|
         li
           = error.full_message
   .field
-    = form.label :title
-    = form.text_field :title
+    = form.label :title, style: "display: block"
+    = form.text_field :title, placeholder: "What is about?", size: "40"
   .field
-    = form.label :content
-    = form.text_area :content, { id: "editor"}
+    = form.label :content, style: "display: block"
+    = form.text_area :content, id: "editor"
   .field
-    = form.label :tag_name
+    = form.label :tag_name, style: "display: block"
     = form.text_field :tag_name
   .actions
     = form.submit
-/ = form_with(model: post) do |form|
-/   - if post.errors.any?
-/     div[style="color: red"]
-
-/     h2
-/       = pluralize(post.errors.count, "error")
-/       |  prohibited this post from being saved:
-/     ul
-/       - post.errors.each do |error|
-/         li
-/           = error.full_message
-/   div
-/     = form.label :title, style: "display: block"
-/     = form.text_field :title
-/   div
-/     = form.label :content, style: "display: block"
-/     = form.text_area :content
-/   div
-/     = form.submit
