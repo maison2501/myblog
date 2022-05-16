@@ -24,13 +24,3 @@ article.mb-4
         .d-flex.justify-content-end.mb-4
           a.btn.btn-primary.text-uppercase href="#!"
             | Older Posts →
-/ p[style="color: green"]
-/   = notice
-/ h1
-/   | Posts
-/ #posts
-/   - @posts.each do |post|
-/     = render post
-/     p
-/       = link_to "Show this post", post
-/ = link_to "New post", new_post_path

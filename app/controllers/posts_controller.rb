@@ -20,12 +20,14 @@ class PostsController < ApplicationController
 
   # GET /posts/1/edit
   def edit
+    @post = Post.find(params[:id])
+    @tag_list = @post.tags.pluck(:tag_name).join(',')
   end
 
   # POST /posts or /posts.json
   def create
     @post = Post.new(post_params)
-    tag_list = params[:post][:tag_name].split(nil)
+    tag_list = params[:post][:tag_name].split(',')
     respond_to do |format|
       if @post.save
         @post.save_posts(tag_list)
@@ -40,8 +42,11 @@ class PostsController < ApplicationController
 
   # PATCH/PUT /posts/1 or /posts/1.json
   def update
+    @post = Post.find(params[:id])
+    tag_list = params[:post][:tag_name].split(',')
     respond_to do |format|
       if @post.update(post_params)
+        @post.save_posts(tag_list)
         format.html { redirect_to post_url(@post), notice: "Post was successfully updated." }
         format.json { render :show, status: :ok, location: @post }
       else
@@ -59,6 +64,16 @@ class PostsController < ApplicationController
       format.html { redirect_to posts_url, notice: "Post was successfully destroyed." }
       format.json { head :no_content }
     end
+  end
+
+  def categories
+    @tag_list = Tag.all
+  end
+
+  def search
+    @tag_list = Tag.all  #こっちの投稿一覧表示ページでも全てのタグを表示するために、タグを全取得
+    @tag = Tag.find(params[:tag_id])  #クリックしたタグを取得
+    @posts = @tag.posts.all.order(created_at: "desc")           #クリックしたタグに紐付けられた投稿を全て表示
   end
 
   def attach

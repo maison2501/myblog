@@ -1,0 +1,24 @@
+= render partial: 'shared/page_title', locals: { page_title: @tag.tag_name }
+header.masthead
+  .container.position-relative.px-4.px-lg-5
+    .row.gx-4.gx-lg-5.justify-content-center
+      .col-md-10.col-lg-8.col-xl-7
+        .post-heading
+          h1
+            | Category: 
+            = @tag.tag_name
+article.mb-4
+  .container.px-4.px-lg-5
+    .row.gx-4.gx-lg-5.justify-content-center
+      .col-md-10.col-lg-8.col-xl-7
+        - @posts.each do |post|
+          .post-preview
+            a href="post.html"
+            h2.post-title
+              = link_to post.title, post
+            p.post-meta
+              = l post.created_at, format: :long
+          hr.my-4
+        br
+        div
+          = link_to 'Back', posts_path

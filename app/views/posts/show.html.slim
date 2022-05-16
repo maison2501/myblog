@@ -7,17 +7,18 @@ header.masthead
           h1
             = @post.title
           span.meta
+            | Posted on 
             = l @post.created_at, format: :long
 article.mb-4
   .container.px-4.px-lg-5
     .row.gx-4.gx-lg-5.justify-content-center
       .col-md-10.col-lg-8.col-xl-7
-        / p
-        /   strong
-        /     | Category:  
-        /   - @post_tags.each do |tag|
-        /     span
-        /       = link_to tag.tag_name, tag_posts_path(tag_id: tag.id)
+        p
+          strong
+            | Category: 
+          - @post_tags.each do |tag|
+            span
+              = link_to tag.tag_name, tag_posts_path(tag_id: tag.id)
         p
           = markdown(@post.content).html_safe
         p

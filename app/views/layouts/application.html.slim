@@ -2,6 +2,7 @@ doctype html
 html lang="ja"
   head
     = stylesheet_link_tag 'application', media: 'all'
+    = stylesheet_link_tag 'styles', media: 'all'
     = javascript_importmap_tags
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
@@ -27,8 +28,8 @@ html lang="ja"
               = link_to 'Home', posts_path, class: "nav-link px-lg-3 py-3 py-lg-4"
             / li.nav-item
             /   = link_to 'About', about_index_path, class: "nav-link px-lg-3 py-3 py-lg-4"
-            / li.nav-item
-            /   = link_to 'Tags', tags_path, class: "nav-link px-lg-3 py-3 py-lg-4"
+            li.nav-item
+              = link_to 'Categories', categories_path, class: "nav-link px-lg-3 py-3 py-lg-4"
             / li.nav-item
             /   = link_to 'Contact', contact_index_path, class: "nav-link px-lg-3 py-3 py-lg-4"
     = yield
