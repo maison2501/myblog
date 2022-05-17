@@ -1,9 +1,11 @@
 doctype html
 html lang="ja"
   head
-    = stylesheet_link_tag 'application', media: 'all'
-    = stylesheet_link_tag 'styles', media: 'all'
+    = stylesheet_link_tag 'application', "data-turbo-track": "reload"
+    = stylesheet_link_tag 'styles', "data-turbo-track": "reload"
     = javascript_importmap_tags
+    = csrf_meta_tags
+    = csp_meta_tag
     meta(charset="utf-8")
     meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
     meta(name="description" content="")

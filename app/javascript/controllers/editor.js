@@ -1,10 +1,11 @@
 import EasyMDE from 'easymde';
+import "easymde/dist/easymde.min.css";
 
-window.onload = function () {
+onload = function () {
     // textareaをMarkdownエディタにする
     var easyMDE = new EasyMDE({
         uploadImage: true,
         imagePathAbsolute: true,
         element: document.getElementById('editor')
     });
-  };
+};
