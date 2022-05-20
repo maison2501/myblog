@@ -12,13 +12,12 @@
           = error.full_message
   .field
     = form.label :title, style: "display: block"
-    = form.text_field :title, placeholder: "What is about?", size: "40"
+    = form.text_field :title, placeholder: "What is about?"
   .field
     = form.label :tag_name, style: "display: block"
     = form.text_field :tag_name, value: @tag_list
   .field
     = form.label :content, style: "display: block"
-    = form.text_area :content, size: "70x40", id: "editor"
-    /, id: "editor"
+    = form.text_area :content
   .actions
     = form.submit
