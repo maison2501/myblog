@@ -82,3 +82,5 @@ gem 'html2slim'
 gem 'redcarpet', '~> 3.5.1'
 # シンタックスハイライトに対応させるためのgem
 gem 'coderay'
+
+gem "activerecord", ">= 7.0.3.1"
