@@ -11,6 +11,8 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     apt-get update && \
     apt-get install --no-install-recommends -y yarn
 
+RUN apt-get update && apt-get install -y npm
+
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

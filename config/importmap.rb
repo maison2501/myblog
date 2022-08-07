@@ -21,3 +21,5 @@ pin "codemirror/mode/xml/xml.js", to: "https://ga.jspm.io/npm:codemirror@5.65.3/
 pin "fs", to: "https://ga.jspm.io/npm:@jspm/core@2.0.0-beta.24/nodelibs/browser/fs.js"
 pin "marked", to: "https://ga.jspm.io/npm:marked@4.0.15/lib/marked.cjs"
 pin "typo-js", to: "https://ga.jspm.io/npm:typo-js@1.2.1/typo.js"
+
+pin_all_from 'app/javascript/custom', under: 'custom'

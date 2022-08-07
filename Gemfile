@@ -83,4 +83,9 @@ gem 'redcarpet', '~> 3.5.1'
 # シンタックスハイライトに対応させるためのgem
 gem 'coderay'
 
+gem 'bootstrap-sass'
+gem 'font-awesome-rails'
+gem 'simple_form'
+gem 'pagedown-bootstrap-rails'
+
 gem "activerecord", ">= 7.0.3.1"

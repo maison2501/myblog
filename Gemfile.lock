@@ -68,9 +68,14 @@ GEM
       tzinfo (~> 2.0)
     addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
+    autoprefixer-rails (10.4.7.0)
+      execjs (~> 2)
     bindex (0.8.1)
     bootsnap (1.13.0)
       msgpack (~> 1.2)
+    bootstrap-sass (3.4.1)
+      autoprefixer-rails (>= 5.2.1)
+      sassc (>= 2.0.0)
     builder (3.2.4)
     capybara (3.37.1)
       addressable
@@ -91,11 +96,15 @@ GEM
     diff-lcs (1.5.0)
     digest (3.1.0)
     erubi (1.11.0)
+    execjs (2.8.1)
     factory_bot (6.2.1)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
+    ffi (1.15.5)
+    font-awesome-rails (4.7.0.8)
+      railties (>= 3.2, < 8.0)
     globalid (1.0.0)
       activesupport (>= 5.0)
     hpricot (0.8.6)
@@ -143,6 +152,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.13.8-x86_64-linux)
       racc (~> 1.4)
+    pagedown-bootstrap-rails (2.1.4)
+      railties (> 3.1)
     public_suffix (4.0.7)
     puma (5.6.4)
       nio4r (~> 2.0)
@@ -200,11 +211,16 @@ GEM
       rspec-support (~> 3.10)
     rspec-support (3.11.0)
     rubyzip (2.3.2)
+    sassc (2.4.0)
+      ffi (~> 1.9)
     selenium-webdriver (4.3.0)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    simple_form (5.1.0)
+      actionpack (>= 5.2)
+      activemodel (>= 5.2)
     slim (4.1.0)
       temple (>= 0.7.6, < 0.9)
       tilt (>= 2.0.6, < 2.1)
@@ -256,19 +272,23 @@ PLATFORMS
 DEPENDENCIES
   activerecord (>= 7.0.3.1)
   bootsnap
+  bootstrap-sass
   capybara
   coderay
   debug
   factory_bot_rails
+  font-awesome-rails
   html2slim
   importmap-rails
   jbuilder
   mysql2 (~> 0.5)
+  pagedown-bootstrap-rails
   puma (~> 5.0)
   rails (~> 7.0.2, >= 7.0.2.4)
   redcarpet (~> 3.5.1)
   rspec-rails
   selenium-webdriver
+  simple_form
   slim-rails
   sprockets-rails
   stimulus-rails
