@@ -96,9 +96,12 @@ RSpec.describe "下書き・ページ送り・フィード・OGP", type: :reques
     it "記事ページには記事のタイトルと書き出しが入る" do
       post = create(:post, title: "海の話", content: "## 見出し\n\n今日は **海** に行った。")
       get post_path(post)
-      expect(response.body).to include('property="og:title" content="海の話 - Blog Maison"')
-      expect(response.body).to include('property="og:description" content="見出し 今日は 海 に行った。"')
-      expect(response.body).to include('property="og:type" content="article"')
+      # 属性の並び順に左右されないよう、HTML として読んで meta タグの中身を取り出す
+      html = Nokogiri::HTML5(response.body)
+      og = ->(name) { html.at_css("meta[property='og:#{name}']")&.[]("content") }
+      expect(og.("title")).to eq "海の話 - Blog Maison"
+      expect(og.("description")).to eq "見出し 今日は 海 に行った。"
+      expect(og.("type")).to eq "article"
     end
   end
 end
