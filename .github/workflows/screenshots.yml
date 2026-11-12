@@ -29,6 +29,7 @@ jobs:
       RAILS_ENV: development
       DATABASE_HOST: 127.0.0.1
       ADMIN_PASSWORD: screenshot-password
+      SKIP_TEST_DATABASE: "true"  # development で db:schema:load すると test DB も触ろうとするため
 
     steps:
       - uses: actions/checkout@v4

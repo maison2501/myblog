@@ -38,3 +38,4 @@
 
 # スクリーンショット用ワークフローの出力
 /screenshots/
+/node_modules/
