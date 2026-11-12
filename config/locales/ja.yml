@@ -1,0 +1,47 @@
+# 画面で使う日本語の文言
+# （rails-i18n gem を入れれば全部そろうが、このアプリで使う分だけなら自分で書いた方が見通しがよい）
+ja:
+  date:
+    formats:
+      default: "%Y/%m/%d"
+      short: "%-m月%-d日"
+      long: "%Y年%-m月%-d日"
+
+  time:
+    formats:
+      default: "%Y/%m/%d %H:%M"
+      short: "%-m月%-d日 %H:%M"
+      long: "%Y年%-m月%-d日 %H:%M"
+    am: "午前"
+    pm: "午後"
+
+  activerecord:
+    models:
+      post: "記事"
+      tag: "タグ"
+      attachment: "画像"
+    attributes:
+      post:
+        title: "タイトル"
+        content: "本文"
+        tag_names: "タグ"
+      tag:
+        tag_name: "タグ名"
+      tag_map:
+        post: "記事"
+        tag: "タグ"
+      attachment:
+        image: "画像"
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+
+  errors:
+    # 「タイトル」+「を入力してください」のように、項目名とメッセージを空白なしでつなげる
+    format: "%{attribute}%{message}"
+    messages:
+      blank: "を入力してください"
+      required: "を入力してください"
+      taken: "はすでに存在します"
+      invalid: "は不正な値です"
+      too_long: "は%{count}文字以内で入力してください"

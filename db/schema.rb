@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_15_081047) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -45,8 +45,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_15_081047) do
   end
 
   create_table "posts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "title"
-    t.text "content"
+    t.string "title", null: false
+    t.text "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -56,14 +56,15 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_15_081047) do
     t.bigint "tag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["post_id"], name: "index_tag_maps_on_post_id"
+    t.index ["post_id", "tag_id"], name: "index_tag_maps_on_post_id_and_tag_id", unique: true
     t.index ["tag_id"], name: "index_tag_maps_on_tag_id"
   end
 
   create_table "tags", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "tag_name"
+    t.string "tag_name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["tag_name"], name: "index_tags_on_tag_name", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

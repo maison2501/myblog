@@ -42,3 +42,34 @@ jobs:
 
       - name: Run tests
         run: bundle exec rspec
+
+      # マイグレーションを最初から流して作った db/schema.rb が、コミットされているものと一致するか
+      # （マイグレーションを書いたのに schema.rb を更新し忘れる、を防ぐ）
+      - name: Migrations match db/schema.rb
+        run: |
+          bin/rails db:drop db:create db:migrate
+          git diff --exit-code db/schema.rb
+
+      - name: Print Gemfile.lock
+        if: always()
+        run: cat Gemfile.lock
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: RuboCop
+        run: bin/rubocop -f github
+
+  cdn:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: CDN の integrity（SRI ハッシュ）が実物と一致するか
+        run: .github/scripts/check-cdn-integrity.sh
