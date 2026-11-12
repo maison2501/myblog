@@ -16,9 +16,10 @@ FROM docker.io/library/ruby:${RUBY_VERSION}-slim AS base
 
 WORKDIR /rails
 
-# curl はヘルスチェック用、default-mysql-client は mysql2 gem が実行時に使うライブラリを含む
+# curl はヘルスチェック用、libmariadb3 は mysql2 gem が実行時に使う MySQL 接続ライブラリ
+# （mysql コマンド一式の default-mysql-client は重いので入れない）
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl default-mysql-client && \
+    apt-get install --no-install-recommends -y curl libmariadb3 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 ENV RAILS_ENV="production" \

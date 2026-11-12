@@ -26,7 +26,7 @@ jobs:
           docker compose exec -T -e RAILS_ENV=test app bin/rails db:prepare
 
       - name: App responds
-        run: curl -fsS --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/up
+        run: curl -fsS --retry 30 --retry-all-errors --retry-delay 2 http://localhost:3000/up
 
       - name: Run tests inside the container
         run: docker compose exec -T -e RAILS_ENV=test app bundle exec rspec
@@ -68,7 +68,7 @@ jobs:
 
       - name: Pages respond
         run: |
-          curl -fsS --retry 30 --retry-connrefused --retry-delay 2 http://localhost:3000/up
+          curl -fsS --retry 30 --retry-all-errors --retry-delay 2 http://localhost:3000/up
           curl -fsS http://localhost:3000/ | grep -q "Blog Maison"
           # 指紋付きの CSS が配信されているか
           css=$(curl -fsS http://localhost:3000/ | grep -o '/assets/styles-[^"]*\.css' | head -1)
