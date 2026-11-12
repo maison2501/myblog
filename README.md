@@ -3,7 +3,7 @@
 Markdown で書ける個人ブログ（Ruby on Rails）。
 
 - Ruby 3.4 / Rails 8.1 / MySQL 8.4
-- 画面：Slim テンプレート ＋ Start Bootstrap「Clean Blog」テーマ
+- 画面：Slim テンプレート ＋ Bootstrap 5.3（CDN）＋ Start Bootstrap「Clean Blog」テーマ（差分だけ `theme.css` に）
 - JavaScript：importmap ＋ Turbo ＋ Stimulus（Node.js 不要）
 - 記事の編集画面：EasyMDE（Markdown エディタ、画像の貼り付け対応）
 - 記事の表示：Redcarpet（Markdown）＋ Rouge（コードの色付け）
@@ -54,9 +54,16 @@ docker compose exec -e RAILS_ENV=test app bin/rails db:prepare   # 初回だけ
 docker compose exec app bundle exec rspec
 ```
 
+コードの書き方のチェック（RuboCop、Rails 公式ルール）：
+
+```sh
+docker compose exec app bin/rubocop      # チェック
+docker compose exec app bin/rubocop -a   # 直せるものは自動で直す
+```
+
 GitHub では次の3つが自動で走る（`.github/workflows/`）。
 
-- `ci.yml`：テスト
+- `ci.yml`：テスト、マイグレーションと `db/schema.rb` の一致、RuboCop、CDN ファイルの integrity
 - `docker.yml`：開発用 compose の起動とその中でのテスト、本番用イメージのビルドと起動確認
 - `screenshots.yml`：プルリクエストのとき、実際にブラウザで操作して各画面を撮影
 

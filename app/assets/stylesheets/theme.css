@@ -59,7 +59,8 @@ body {
 }
 
 hr {
-  background-color: #dee2e6;
+  /* Bootstrap 5.3 では hr の線が border-top（色は color）で描かれるので、color で薄いグレーにする */
+  color: #dee2e6;
   opacity: 1;
 }
 
