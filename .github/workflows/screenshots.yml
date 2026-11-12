@@ -62,7 +62,19 @@ jobs:
 
       - name: Server log
         if: always()
-        run: tail -n 200 log/development.log
+        run: grep -E "Started|Completed|Redirected|Error|error" log/development.log | tail -n 150
+
+      # 撮った画像を圧縮してログに出す（アーティファクトを取得できない環境から確認するため）
+      - name: Dump screenshots
+        if: always()
+        run: |
+          sudo apt-get install -y -qq webp > /dev/null
+          for f in screenshots/*.png; do
+            cwebp -quiet -q 60 -resize 900 0 "$f" -o "${f%.png}.webp"
+            echo "=====BEGIN $(basename "${f%.png}").webp"
+            base64 -w 0 "${f%.png}.webp"; echo
+            echo "=====END"
+          done
 
       - uses: actions/upload-artifact@v4
         if: always()
