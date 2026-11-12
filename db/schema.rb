@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_130000) do
   create_table "active_storage_attachments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -49,6 +49,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_120000) do
     t.text "content", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "published_at"
+    t.index ["published_at"], name: "index_posts_on_published_at"
   end
 
   create_table "tag_maps", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|

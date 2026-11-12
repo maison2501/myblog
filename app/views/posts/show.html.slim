@@ -1,5 +1,8 @@
 - provide :title, @post.title
-= render "shared/masthead", heading: @post.title, meta: l(@post.created_at, format: :long)
+- provide :description, post_excerpt(@post)
+- provide :og_type, "article"
+= render "shared/masthead", heading: @post.title,
+  meta: (@post.draft? ? "下書き（あなたにしか見えていません）" : l(@post.published_at, format: :long))
 = render layout: "shared/content" do
   - if @post.tags.any?
     p

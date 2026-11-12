@@ -49,6 +49,42 @@ RSpec.describe Post, type: :model do
     end
   end
 
+  describe "下書き / 公開" do
+    it "公開日時が無ければ下書き" do
+      post = build(:post, :draft)
+      expect(post).to be_draft
+      expect(post).not_to be_published
+    end
+
+    it "published は公開日時が今より前の記事だけ（下書きと、公開日時が未来の記事は含まない）" do
+      published = create(:post, published_at: 1.day.ago)
+      create(:post, :draft)
+      create(:post, published_at: 1.day.from_now)
+      expect(Post.published).to eq [ published ]
+    end
+
+    it "「公開する」にチェックすると公開日時が入り、外すと下書きに戻る" do
+      post = create(:post, :draft)
+      post.update!(publish: "1")
+      expect(post.published_at).to be_present
+
+      post.update!(publish: "0")
+      expect(post.published_at).to be_nil
+    end
+
+    it "公開済みの記事を編集しても、公開日時は変わらない" do
+      post = create(:post, published_at: 3.days.ago)
+      expect { post.update!(title: "直した", publish: "1") }.not_to change { post.reload.published_at }
+    end
+
+    it "recent は新しい順（下書きは作成日時で並ぶ）" do
+      old = create(:post, published_at: 2.days.ago)
+      new = create(:post, published_at: 1.day.ago)
+      draft = create(:post, :draft)
+      expect(Post.recent).to eq [ draft, new, old ]
+    end
+  end
+
   describe "#tag_names" do
     it "付いているタグをカンマ区切りで返す" do
       post = create(:post, tag_names: "Ruby,猫")
