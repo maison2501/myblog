@@ -75,27 +75,18 @@ async function shot(page, name, opts = {}) {
   await page.click(".CodeMirror")
   await page.keyboard.type("## 見出し\n\nエディタから入力した **本文** です。\n\n")
 
-  // 画像アップロード（ツールバーのボタンが作る file input に直接ファイルを渡す）
-  const inputs = page.locator("input[type=file]")
-  console.log(`file inputs on page: ${await inputs.count()}`)
-  for (let i = 0; i < await inputs.count(); i++) {
-    console.log(`  input[${i}]: ${await inputs.nth(i).evaluate((el) => el.outerHTML)}`)
-  }
-  const fileInput = inputs.first()
-  if (await fileInput.count()) {
-    const uploaded = page.waitForResponse((res) => res.url().includes("/articles/attach"), { timeout: 10000 })
-      .then(async (res) => console.log(`attach response: ${res.status()} ${await res.text()}`))
-      .catch(() => problems.push("[pc-admin] 画像アップロードのリクエストが送られていない"))
-    await fileInput.setInputFiles("spec/fixtures/files/screenshot-sample.png")
-    console.log(`files on input: ${await fileInput.evaluate((el) => el.files.length)}`)
-    await page.waitForTimeout(1500)
-    console.log(`status bar: ${await page.locator(".editor-statusbar").innerText()}`)
-    await uploaded
-    await page.waitForTimeout(1000)
-    console.log(`editor text: ${JSON.stringify(await page.evaluate(() => document.querySelector(".CodeMirror").CodeMirror.getValue()))}`)
-  } else {
-    problems.push("[pc-admin] 画像アップロード用の input が見つからない")
-  }
+  // 画像アップロード（ツールバーの「画像をアップロード」ボタンを押してファイルを選ぶ）
+  const uploaded = page.waitForResponse((res) => res.url().includes("/articles/attach"), { timeout: 15000 })
+    .then(async (res) => console.log(`attach response: ${res.status()} ${await res.text()}`))
+    .catch(() => problems.push("[pc-admin] 画像アップロードのリクエストが送られていない"))
+  const [ chooser ] = await Promise.all([
+    page.waitForEvent("filechooser"),
+    page.click(".editor-toolbar button.upload-image")
+  ])
+  await chooser.setFiles("spec/fixtures/files/screenshot-sample.png")
+  await uploaded
+  await page.waitForTimeout(1000)
+  console.log(`editor text: ${JSON.stringify(await page.evaluate(() => document.querySelector(".CodeMirror").CodeMirror.getValue()))}`)
   await shot(page, "11_pc_editor_filled")
 
   await page.click("input[type=submit][value='保存する']")
