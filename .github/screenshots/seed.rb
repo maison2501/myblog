@@ -25,7 +25,7 @@ Post.create!(
 Post.create!(
   title: "Rails 8 にアップデートした",
   tag_names: "Ruby, Rails",
-  content: <<~MD
+  content: <<~'MD'
     放置していたブログを Rails 8.1 に上げた。
 
     ```ruby
