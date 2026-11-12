@@ -1,8 +1,12 @@
-/ 記事タイトルと投稿日の一覧（トップページとタグ別一覧で共通）
+/ 記事タイトルと日付の一覧（トップページとタグ別一覧で共通）
 - if posts.empty?
   p.text-muted まだ記事がありません。
 - posts.each do |post|
   .post-preview
-    h2.post-title = link_to post.title, post
-    p.post-meta = l post.created_at, format: :long
+    h2.post-title
+      = link_to post.title, post
+      - if post.draft?
+        span.badge.text-bg-secondary.ms-2.align-middle.fs-6 下書き
+    p.post-meta = l post.display_time, format: :long
   hr.my-4
+= render "posts/pager"

@@ -4,6 +4,17 @@ html lang="ja"
     meta charset="utf-8"
     meta name="viewport" content="width=device-width, initial-scale=1"
     title = full_title(yield(:title))
+    / 検索結果や SNS でシェアされたときに表示される説明・タイトル（OGP）
+    - description = content_for?(:description) ? yield(:description) : "Cat, Ocean, and Human"
+    meta name="description" content=description
+    meta property="og:site_name" content=site_title
+    meta property="og:title" content=full_title(yield(:title))
+    meta property="og:description" content=description
+    meta property="og:type" content=(content_for?(:og_type) ? yield(:og_type) : "website")
+    meta property="og:url" content=request.original_url
+    meta property="og:locale" content="ja_JP"
+    meta name="twitter:card" content="summary"
+    = auto_discovery_link_tag :atom, feed_url, title: site_title
     = csrf_meta_tags
     = csp_meta_tag
     link rel="icon" href="/favicon.ico"

@@ -32,6 +32,7 @@ async function shot(page, name, opts = {}) {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, locale: "ja-JP" })).newPage()
   watch(page, "pc-guest")
   await page.goto(BASE + "/");                       await shot(page, "01_pc_index")
+  if (await page.getByText("まだ書きかけの記事").count()) problems.push("[pc-guest] 未ログインなのに下書きが一覧に出ている")
   console.log(`nav on load: ${await page.evaluate(() => { const n = document.getElementById("mainNav"); const cs = getComputedStyle(n); return `${n.className} | bg=${cs.backgroundColor} | transition=${cs.transition} | scrollY=${scrollY}` })}`)
   await page.getByRole("link", { name: "Rails 8 にアップデートした" }).first().click()
   await shot(page, "02_pc_post_code")
@@ -67,6 +68,8 @@ async function shot(page, name, opts = {}) {
   await page.waitForURL(BASE + "/").catch(() => problems.push(`[pc-admin] ログイン後にトップへ移動しない (${page.url()})`))
   await shot(page, "09_pc_after_login")
 
+  await page.goto(BASE + "/")
+  await shot(page, "09b_pc_index_as_admin_with_draft")
   await page.getByRole("link", { name: "New Post" }).click()
   await page.waitForSelector(".EasyMDEContainer", { timeout: 10000 }).catch(() => problems.push("[pc-admin] EasyMDE が表示されない"))
   await shot(page, "10_pc_new_post_editor")
@@ -90,6 +93,7 @@ async function shot(page, name, opts = {}) {
   console.log(`editor text: ${JSON.stringify(await page.evaluate(() => document.querySelector(".CodeMirror").CodeMirror.getValue()))}`)
   await shot(page, "11_pc_editor_filled")
 
+  await page.check("#post_publish")
   await page.click("input[type=submit][value='保存する']")
   await page.waitForURL(/\/posts\/\d+$/).catch(() => problems.push(`[pc-admin] 投稿後に記事ページへ移動しない (${page.url()})`))
   await page.waitForSelector(".post-body")

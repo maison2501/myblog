@@ -10,6 +10,9 @@ Rails.application.routes.draw do
     get "posts", to: "posts#search"
   end
 
+  # 更新情報（Atom フィード）
+  get "feed", to: "feeds#show", defaults: { format: :atom }, as: :feed
+
   # 管理者ログイン
   get    "login",  to: "sessions#new"
   post   "login",  to: "sessions#create"

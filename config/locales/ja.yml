@@ -25,6 +25,8 @@ ja:
         title: "タイトル"
         content: "本文"
         tag_names: "タグ"
+        publish: "公開"
+        published_at: "公開日時"
       tag:
         tag_name: "タグ名"
       tag_map:

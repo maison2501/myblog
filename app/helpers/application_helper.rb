@@ -12,6 +12,11 @@ module ApplicationHelper
     page_title.blank? ? SITE_TITLE : "#{page_title} - #{SITE_TITLE}"
   end
 
+  # 記事の書き出し（Markdown の記号を除いた本文の先頭）。OGP やフィードの説明文に使う
+  def post_excerpt(post, length: 120)
+    strip_tags(markdown(post.content)).squish.truncate(length)
+  end
+
   # Markdown を HTML に変換する。```ruby のようなコードブロックは Rouge で色付けする
   # （Redcarpet の変換器はスレッドセーフではないので、呼び出しごとに作る）
   def markdown(text)

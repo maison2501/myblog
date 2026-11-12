@@ -5,6 +5,7 @@ Tag.destroy_all
 Post.create!(
   title: "海辺で猫と過ごした週末",
   tag_names: "猫, 海",
+  published_at: 2.hours.ago,
   content: <<~MD
     ## 土曜日
 
@@ -25,6 +26,7 @@ Post.create!(
 Post.create!(
   title: "Rails 8 にアップデートした",
   tag_names: "Ruby, Rails",
+  published_at: 1.hour.ago,
   content: <<~'MD'
     放置していたブログを Rails 8.1 に上げた。
 
@@ -41,6 +43,12 @@ Post.create!(
 
     詳しくは https://rubyonrails.org を参照。
   MD
+)
+
+Post.create!(
+  title: "まだ書きかけの記事",
+  tag_names: "下書き",
+  content: "公開前のメモ。"
 )
 
 puts "seeded #{Post.count} posts, #{Tag.count} tags"
