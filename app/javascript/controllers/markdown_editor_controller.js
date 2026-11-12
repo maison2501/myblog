@@ -13,6 +13,7 @@ export default class extends Controller {
       spellChecker: false,
       forceSync: true,
       uploadImage: this.hasUploadUrlValue,
+      imagePathAbsolute: true, // サーバーが返したパスをそのまま使う（ドメインを付け足さない）
       toolbar: [
         "bold", "italic", "strikethrough", "heading", "|",
         "quote", "unordered-list", "ordered-list", "|",

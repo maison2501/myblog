@@ -87,7 +87,7 @@ RSpec.describe "記事", type: :request do
     it "画像をアップロードすると URL が返る" do
       post attach_image_path, params: { image: fixture_file_upload("image.png", "image/png") }
       expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["url"]).to be_present
+      expect(response.parsed_body["url"]).to start_with("/rails/active_storage/")
     end
   end
 end

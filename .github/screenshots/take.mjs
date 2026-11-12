@@ -23,7 +23,7 @@ function watch(page, label) {
 async function shot(page, name, opts = {}) {
   await page.waitForLoadState("networkidle")
   await page.waitForTimeout(600) // ナビの色の切り替えアニメーション（0.2秒）が終わるのを待つ
-  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: opts.fullPage ?? true })
+  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: opts.fullPage ?? true, animations: "disabled" })
   console.log(`saved ${name}.png  (${page.url()})`)
 }
 
@@ -32,6 +32,7 @@ async function shot(page, name, opts = {}) {
   const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, locale: "ja-JP" })).newPage()
   watch(page, "pc-guest")
   await page.goto(BASE + "/");                       await shot(page, "01_pc_index")
+  console.log(`nav on load: ${await page.evaluate(() => { const n = document.getElementById("mainNav"); const cs = getComputedStyle(n); return `${n.className} | bg=${cs.backgroundColor} | transition=${cs.transition} | scrollY=${scrollY}` })}`)
   await page.getByRole("link", { name: "Rails 8 にアップデートした" }).first().click()
   await shot(page, "02_pc_post_code")
   await page.goto(BASE + "/");

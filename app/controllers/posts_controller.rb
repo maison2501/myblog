@@ -51,12 +51,13 @@ class PostsController < ApplicationController
     @posts = @tag.posts.recent
   end
 
-  # エディタからの画像アップロード。保存した画像の URL を返す
+  # エディタからの画像アップロード。保存した画像のパス（/rails/active_storage/...）を返す
+  # ドメインを含めないので、公開先の URL が変わっても記事内の画像は表示される
   def attach
     attachment = Attachment.new(image: params[:image])
 
     if attachment.save
-      render json: { url: url_for(attachment.image) }
+      render json: { url: rails_blob_path(attachment.image, only_path: true) }
     else
       render json: { errors: attachment.errors.full_messages }, status: 422
     end
