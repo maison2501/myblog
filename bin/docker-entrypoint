@@ -1,0 +1,9 @@
+#!/bin/bash -e
+# 本番用イメージの入口（Dockerfile の ENTRYPOINT）
+
+# サーバーを起動するときだけ、先に DB を準備する（無ければ作成、マイグレーションがあれば実行）
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"
