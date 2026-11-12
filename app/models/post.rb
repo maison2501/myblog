@@ -2,18 +2,26 @@ class Post < ApplicationRecord
   has_many :tag_maps, dependent: :destroy
   has_many :tags, through: :tag_maps
 
-  def save_posts(tags)
-    current_tags = self.tags.pluck(:tag_name) unless self.tags.nil?
-    old_tags = current_tags - tags
-    new_tags = tags - current_tags
+  validates :title, presence: true
+  validates :content, presence: true
 
-    old_tags.each do |old_name|
-      self.tags.delete Tag.find_by(tag_name: old_name)
-    end
+  scope :recent, -> { order(created_at: :desc) }
 
-    new_tags.each do |new_name|
-      post_tag = Tag.find_or_create_by(tag_name: new_name)
-      self.tags << post_tag
+  after_save :sync_tags, if: -> { @pending_tag_names }
+
+  # フォームの「タグ」欄（カンマ区切りの文字列）として読み書きする
+  def tag_names
+    (@pending_tag_names || tags.map(&:tag_name)).join(",")
+  end
+
+  def tag_names=(value)
+    @pending_tag_names = value.to_s.split(/[,、]/).map(&:strip).compact_blank.uniq
+  end
+
+  private
+    # 入力されたタグに付け替える。無いタグは作成し、外したタグは記事との紐付けだけ消す
+    def sync_tags
+      self.tags = @pending_tag_names.map { |name| Tag.find_or_create_by!(tag_name: name) }
+      @pending_tag_names = nil
     end
-end
 end

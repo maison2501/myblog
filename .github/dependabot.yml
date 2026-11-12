@@ -1,0 +1,16 @@
+# gem と GitHub Actions の更新を毎週チェックして、プルリクエストを作ってもらう
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      rails:
+        patterns: [ "rails", "action*", "active*", "railties" ]
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

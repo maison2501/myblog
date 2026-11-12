@@ -1,29 +1,24 @@
-FROM ruby:3.0
+FROM ruby:3.4
 
-ENV LANG C.UTF-8
-ENV TZ Asia/Tokyo
+ENV LANG=C.UTF-8 \
+    TZ=Asia/Tokyo
 
+# mysql2 gem のビルドと DB 接続確認に必要なものだけ入れる
+# （importmap を使うので Node.js / Yarn は不要）
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends sudo curl apt-transport-https wget build-essential libpq-dev nodejs default-mysql-client
-
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && \
-    apt-get install --no-install-recommends -y yarn
-
-RUN apt-get update && apt-get install -y npm
-
-RUN apt-get clean && \
+    apt-get install -y --no-install-recommends default-mysql-client && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /app
 WORKDIR /app
-COPY Gemfile /Gemfile
-COPY Gemfile.lock /Gemfile.lock
+
+# Gemfile.lock がまだ無い場合もビルドできるように * を付けている
+COPY Gemfile Gemfile.lock* /app/
 RUN bundle install
+
 COPY . /app
 
 COPY docker/app/entrypoint.sh /usr/bin/
 RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
+
 EXPOSE 3000

@@ -1,0 +1,15 @@
+/ 各ページ上部の大きな見出し
+  locals: heading（見出し）, subheading（小見出し・任意）, meta（日付など・任意）, style（:site か :post）
+- subheading = local_assigns[:subheading]
+- meta = local_assigns[:meta]
+- style = local_assigns.fetch(:style, :post)
+header.masthead
+  .container.position-relative.px-4.px-lg-5
+    .row.gx-4.gx-lg-5.justify-content-center
+      .col-md-10.col-lg-8.col-xl-7
+        div class=(style == :site ? "site-heading" : "post-heading")
+          h1 = heading
+          - if subheading
+            span.subheading = subheading
+          - if meta
+            span.meta = meta
