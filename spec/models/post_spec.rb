@@ -13,6 +13,12 @@ RSpec.describe Post, type: :model do
     it "本文が無いと無効" do
       expect(build(:post, content: "")).not_to be_valid
     end
+
+    it "エラーメッセージは日本語" do
+      post = Post.new
+      post.valid?
+      expect(post.errors.full_messages).to include("タイトルを入力してください", "本文を入力してください")
+    end
   end
 
   describe "#tag_names=" do

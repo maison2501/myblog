@@ -14,6 +14,7 @@ RSpec.describe "記事", type: :request do
       get post_path(blog_post)
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('class="highlight')
+      expect(response.body).to match(/\d{4}年\d{1,2}月\d{1,2}日/) # 投稿日が日本語の書式
     end
 
     it "カテゴリー一覧とタグ別の記事一覧" do

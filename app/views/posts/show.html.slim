@@ -1,5 +1,5 @@
 - provide :title, @post.title
-= render "shared/masthead", heading: @post.title, meta: "Posted on #{l(@post.created_at, format: :long)}"
+= render "shared/masthead", heading: @post.title, meta: l(@post.created_at, format: :long)
 = render layout: "shared/content" do
   - if @post.tags.any?
     p
