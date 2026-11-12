@@ -1,23 +1,22 @@
-/ = javascript_import_module_tag "controllers/editor"
-= form_with(model: post) do |form|
+= form_with model: post do |form|
   - if post.errors.any?
-    div[style="color: red"]
+    .alert.alert-danger
+      p.mb-1 = "#{post.errors.count}件のエラーがあります"
+      ul.mb-0
+        - post.errors.each do |error|
+          li = error.full_message
 
-    h2
-      = pluralize(post.errors.count, "error")
-      |  prohibited this post from being saved:
-    ul
-      - post.errors.each do |error|
-        li
-          = error.full_message
-  .field
-    = form.label :title, style: "display: block"
-    = form.text_field :title, placeholder: "What is about?"
-  .field
-    = form.label :tag_name, style: "display: block"
-    = form.text_field :tag_name, value: @tag_list
-  .field
-    = form.label :content, style: "display: block", id: "editor", size: "1000x500"
-    = form.text_area :content
-  .actions
-    = form.submit
+  .mb-3
+    = form.label :title, "タイトル", class: "form-label"
+    = form.text_field :title, class: "form-control", placeholder: "What is about?"
+
+  .mb-3
+    = form.label :tag_names, "タグ（カンマ区切り）", class: "form-label"
+    = form.text_field :tag_names, class: "form-control", placeholder: "Ruby, 猫, 海"
+
+  .mb-3
+    = form.label :content, "本文（Markdown）", class: "form-label"
+    = form.text_area :content, rows: 20, class: "form-control",
+      data: { controller: "markdown-editor", markdown_editor_upload_url_value: attach_image_path }
+
+  = form.submit "保存する", class: "btn btn-primary mb-4"

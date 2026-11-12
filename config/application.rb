@@ -8,15 +8,12 @@ Bundler.require(*Rails.groups)
 
 module App
   class Application < Rails::Application
-    # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 8.1
 
-    # Configuration for the application, engines, and railties goes here.
-    #
-    # These settings can be overridden in specific environments using the files
-    # in config/environments, which are processed later.
-    #
-    # config.time_zone = "Central Time (US & Canada)"
-    # config.eager_load_paths << Rails.root.join("extras")
+    # lib/ 配下を自動読み込みの対象にする（assets と tasks は除く）
+    config.autoload_lib(ignore: %w[assets tasks])
+
+    # 画面に表示する日時を日本時間にする（DB には UTC のまま保存される）
+    config.time_zone = "Tokyo"
   end
 end

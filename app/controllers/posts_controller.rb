@@ -1,94 +1,74 @@
 class PostsController < ApplicationController
+  # 閲覧は誰でも、投稿・編集・削除・画像アップロードは管理者だけ
+  before_action :require_admin, except: %i[ index show categories search ]
   before_action :set_post, only: %i[ show edit update destroy ]
 
-  # GET /posts or /posts.json
   def index
-    @tag_list = Tag.all                         #ビューでタグ一覧を表示するために全取得。
-    @posts = Post.all.order(created_at: "desc") #ビューで投稿一覧を表示するために全取得。
+    @posts = Post.recent
   end
 
-  # GET /posts/1 or /posts/1.json
   def show
-    @post = Post.find(params[:id])  #クリックした投稿を取得。
-    @post_tags = @post.tags         #そのクリックした投稿に紐付けられているタグの取得。
   end
 
-  # GET /posts/new
   def new
     @post = Post.new
   end
 
-  # GET /posts/1/edit
   def edit
-    @post = Post.find(params[:id])
-    @tag_list = @post.tags.pluck(:tag_name).join(',')
   end
 
-  # POST /posts or /posts.json
   def create
     @post = Post.new(post_params)
-    tag_list = params[:post][:tag_name].split(',')
-    respond_to do |format|
-      if @post.save
-        @post.save_posts(tag_list)
-        format.html { redirect_to post_url(@post), notice: "Post was successfully created." }
-        format.json { render :show, status: :created, location: @post }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
-      end
+
+    if @post.save
+      redirect_to @post, notice: "記事を投稿しました"
+    else
+      render :new, status: 422
     end
   end
 
-  # PATCH/PUT /posts/1 or /posts/1.json
   def update
-    @post = Post.find(params[:id])
-    tag_list = params[:post][:tag_name].split(',')
-    respond_to do |format|
-      if @post.update(post_params)
-        @post.save_posts(tag_list)
-        format.html { redirect_to post_url(@post), notice: "Post was successfully updated." }
-        format.json { render :show, status: :ok, location: @post }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
-      end
+    if @post.update(post_params)
+      redirect_to @post, notice: "記事を更新しました"
+    else
+      render :edit, status: 422
     end
   end
 
-  # DELETE /posts/1 or /posts/1.json
   def destroy
-    @post.destroy
-
-    respond_to do |format|
-      format.html { redirect_to posts_url, notice: "Post was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    @post.destroy!
+    redirect_to posts_path, notice: "記事を削除しました", status: :see_other
   end
 
+  # カテゴリー（タグ）一覧
   def categories
-    @tag_list = Tag.all
+    @tags = Tag.order(:tag_name)
   end
 
+  # 指定したタグが付いた記事の一覧
   def search
-    @tag_list = Tag.all  #こっちの投稿一覧表示ページでも全てのタグを表示するために、タグを全取得
-    @tag = Tag.find(params[:tag_id])  #クリックしたタグを取得
-    @posts = @tag.posts.all.order(created_at: "desc")           #クリックしたタグに紐付けられた投稿を全て表示
+    @tag = Tag.find(params[:tag_id])
+    @posts = @tag.posts.recent
   end
 
+  # エディタからの画像アップロード。保存した画像のパス（/rails/active_storage/...）を返す
+  # ドメインを含めないので、公開先の URL が変わっても記事内の画像は表示される
   def attach
-    attachment = Attachment.create! image: params[:image]
-    render json: { filename: url_for(attachment.image) }
+    attachment = Attachment.new(image: params[:image])
+
+    if attachment.save
+      render json: { url: rails_blob_path(attachment.image, only_path: true) }
+    else
+      render json: { errors: attachment.errors.full_messages }, status: 422
+    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_post
       @post = Post.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def post_params
-      params.require(:post).permit(:title, :content)
+      params.expect(post: [ :title, :content, :tag_names ])
     end
 end

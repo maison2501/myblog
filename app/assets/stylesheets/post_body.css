@@ -1,0 +1,8 @@
+/* 記事本文（Markdown から変換した HTML）の見た目 */
+.post-body table { width: 100%; margin: 1.5rem 0; border-collapse: collapse; font-size: 0.95em; }
+.post-body th,
+.post-body td { padding: 0.5rem 0.75rem; border: 1px solid #dee2e6; }
+.post-body th { background-color: #f6f8fa; font-weight: 700; }
+.post-body blockquote { margin: 1.5rem 0; padding: 0.25rem 1rem; border-left: 4px solid #dee2e6; color: #6c757d; }
+.post-body img { max-width: 100%; height: auto; }
+.post-body mark { padding: 0 0.2em; }

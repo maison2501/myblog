@@ -1,0 +1,8 @@
+/ 記事タイトルと投稿日の一覧（トップページとタグ別一覧で共通）
+- if posts.empty?
+  p.text-muted まだ記事がありません。
+- posts.each do |post|
+  .post-preview
+    h2.post-title = link_to post.title, post
+    p.post-meta = l post.created_at, format: :long
+  hr.my-4

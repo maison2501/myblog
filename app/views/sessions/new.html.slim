@@ -1,0 +1,8 @@
+- provide :title, "Login"
+= render "shared/masthead", heading: "Login"
+= render layout: "shared/content" do
+  = form_with url: login_path do |form|
+    .mb-3
+      = form.label :password, "管理者パスワード", class: "form-label"
+      = form.password_field :password, class: "form-control", required: true, autofocus: true, autocomplete: "current-password"
+    = form.submit "ログイン", class: "btn btn-primary"

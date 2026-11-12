@@ -1,16 +1,5 @@
-= render partial: 'shared/page_title', locals: { page_title: @post.title }
-header.masthead
-  .container.position-relative.px-4.px-lg-5
-    .row.gx-4.gx-lg-5.justify-content-center
-      .col-md-10.col-lg-8.col-xl-7
-        .post-heading
-          h1
-            | New Post
-article.mb-4
-  .container.px-4.px-lg-5
-    .row.gx-4.gx-lg-5.justify-content-center
-      .col-md-10.col-lg-8.col-xl-7
-        = render 'form', post: @post
-        br
-        div
-          = link_to 'Back', posts_path
+- provide :title, "New Post"
+= render "shared/masthead", heading: "New Post"
+= render layout: "shared/content" do
+  = render "form", post: @post
+  = link_to "← 戻る", root_path

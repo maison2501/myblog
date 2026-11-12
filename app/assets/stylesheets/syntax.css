@@ -1,0 +1,20 @@
+/*
+ * コードブロックの色付け（Rouge が出力する .highlight 用、GitHub 風の配色）
+ * 別の配色にしたいときは `bundle exec rougify style monokai > app/assets/stylesheets/syntax.css` のように作り直せる
+ */
+.highlight { background-color: #f6f8fa; color: #24292f; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.875rem; }
+.highlight pre { margin: 0; background: transparent; }
+.highlight .c, .highlight .c1, .highlight .cm, .highlight .cs, .highlight .cp, .highlight .cd { color: #6e7781; font-style: italic; }
+.highlight .k, .highlight .kd, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kv, .highlight .ow { color: #cf222e; }
+.highlight .kc, .highlight .kt, .highlight .no, .highlight .bp { color: #0550ae; }
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .dl { color: #0a3069; }
+.highlight .sr { color: #116329; }
+.highlight .ss { color: #0550ae; }
+.highlight .m, .highlight .mi, .highlight .mf, .highlight .mh, .highlight .mo, .highlight .il { color: #0550ae; }
+.highlight .nf, .highlight .fm, .highlight .nc, .highlight .nn { color: #8250df; }
+.highlight .nb, .highlight .na, .highlight .nt { color: #116329; }
+.highlight .nv, .highlight .vi, .highlight .vc, .highlight .vg { color: #953800; }
+.highlight .o { color: #24292f; }
+.highlight .gd { color: #82071e; background-color: #ffebe9; }
+.highlight .gi { color: #116329; background-color: #dafbe1; }
+.highlight .err { color: #f6f8fa; background-color: #82071e; }

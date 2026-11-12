@@ -1,0 +1,84 @@
+# 実際にアプリを起動してブラウザで操作し、各画面のスクリーンショットを撮る
+name: Screenshots
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: app_development
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      RAILS_ENV: development
+      DATABASE_HOST: 127.0.0.1
+      ADMIN_PASSWORD: screenshot-password
+      SKIP_TEST_DATABASE: "true"  # development で db:schema:load すると test DB も触ろうとするため
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Prepare database and sample posts
+        run: |
+          bin/rails db:schema:load
+          bin/rails runner .github/screenshots/seed.rb
+
+      - name: Start server
+        run: |
+          bin/rails server -p 3000 -d
+          for i in $(seq 1 30); do curl -sf http://localhost:3000/up && break; sleep 1; done
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --no-package-lock playwright@1
+          npx playwright install --with-deps chromium
+
+      - name: Take screenshots
+        run: node .github/screenshots/take.mjs
+
+      - name: Server log
+        if: always()
+        run: grep -E "Started|Completed|Redirected|Error|error" log/development.log | tail -n 150
+
+      # 撮った画像を圧縮してログに出す（アーティファクトを取得できない環境から確認するため）
+      - name: Dump screenshots
+        if: always()
+        run: |
+          sudo apt-get install -y -qq webp > /dev/null
+          for f in screenshots/*.png; do
+            cwebp -quiet -q 60 -resize 900 0 "$f" -o "${f%.png}.webp"
+            echo "=====BEGIN $(basename "${f%.png}").webp"
+            base64 -w 0 "${f%.png}.webp"; echo
+            echo "=====END"
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots
+          path: screenshots/
+          retention-days: 14

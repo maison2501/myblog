@@ -29,3 +29,13 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# macOS
+.DS_Store
+
+# docker compose 用の環境変数（パスワードなど）
+/.env
+
+# スクリーンショット用ワークフローの出力
+/screenshots/
+/node_modules/
