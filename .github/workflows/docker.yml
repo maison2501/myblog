@@ -1,0 +1,81 @@
+# Docker まわりが壊れていないかを確かめる
+# - dev:  compose.yaml で開発環境を起動し、コンテナの中でテストを流す
+# - prod: 本番用イメージをビルドし、MySQL と一緒に起動してページが返るか確かめる
+name: Docker
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build
+        run: docker compose build
+
+      - name: Start (DB が healthy になるまで待つ)
+        run: docker compose up -d --wait db && docker compose up -d app
+
+      - name: Prepare databases
+        run: |
+          docker compose exec -T app bin/rails db:prepare
+          docker compose exec -T -e RAILS_ENV=test app bin/rails db:prepare
+
+      - name: App responds
+        run: curl -fsS --retry 30 --retry-all-errors --retry-delay 2 http://localhost:3000/up
+
+      - name: Run tests inside the container
+        run: docker compose exec -T -e RAILS_ENV=test app bundle exec rspec
+
+      - name: Logs
+        if: failure()
+        run: docker compose logs
+
+  prod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build production image
+        run: docker build -t myblog:prod .
+
+      - name: Image info
+        run: |
+          docker image ls myblog:prod --format 'size: {{.Size}}'
+          echo "user: $(docker run --rm --entrypoint whoami myblog:prod)"
+
+      - name: Start MySQL and the app
+        run: |
+          docker network create blog
+          docker run -d --name db --network blog \
+            -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=app_production \
+            -e MYSQL_USER=app -e MYSQL_PASSWORD=app-password \
+            --health-cmd='mysqladmin ping -h 127.0.0.1 -uroot -proot --silent' --health-interval=5s --health-retries=30 \
+            mysql:8.4
+          for i in $(seq 1 60); do
+            [ "$(docker inspect -f '{{.State.Health.Status}}' db)" = healthy ] && break
+            sleep 2
+          done
+          docker run -d --name app --network blog -p 3000:3000 \
+            -e SECRET_KEY_BASE="$(openssl rand -hex 64)" \
+            -e DATABASE_HOST=db -e APP_DATABASE_PASSWORD=app-password \
+            -e ADMIN_PASSWORD=prod-check \
+            myblog:prod
+
+      - name: Pages respond
+        run: |
+          curl -fsS --retry 30 --retry-all-errors --retry-delay 2 http://localhost:3000/up
+          curl -fsS http://localhost:3000/ | grep -q "Blog Maison"
+          # 指紋付きの CSS が配信されているか
+          css=$(curl -fsS http://localhost:3000/ | grep -o '/assets/styles-[^"]*\.css' | head -1)
+          echo "css: $css"
+          curl -fsS -o /dev/null "http://localhost:3000$css"
+          curl -fsS -o /dev/null http://localhost:3000/login
+
+      - name: Logs
+        if: always()
+        run: docker logs app

@@ -1,0 +1,34 @@
+# docker build のときにイメージへ送らないファイル
+# （送るファイルが少ないほどビルドが速く、秘密情報がイメージに入る事故も防げる）
+
+/.git/
+/.gitignore
+/.github/
+
+# 秘密情報
+/.env*
+/config/master.key
+/config/credentials/*.key
+
+# ログ・一時ファイル・アップロード画像
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+
+# ビルド済みアセット（イメージの中で作り直す）
+/public/assets
+
+# 開発・テスト用のもの
+/node_modules/
+/screenshots/
+/spec/
+/compose.yaml
+/docker/mysql/
+/README.md

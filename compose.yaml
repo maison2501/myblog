@@ -1,0 +1,56 @@
+# 開発用の構成。`docker compose up` で DB とアプリが起動する
+# （本番用のイメージはリポジトリ直下の Dockerfile。こちらとは別物）
+
+services:
+  db:
+    # 公式イメージをそのまま使う（8.4 は長期サポート版。Intel / Apple Silicon どちらでも動く）
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: app_development
+      MYSQL_USER: ${DB_USER:-user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-password}
+      TZ: Asia/Tokyo
+      LANG: C.UTF-8
+    ports:
+      # 127.0.0.1 を付けると、この PC からだけ接続できる（同じ LAN の他の機器からは見えない）
+      - "127.0.0.1:3306:3306"
+    volumes:
+      # DB のデータは名前付きボリュームに保存する。`docker compose down` しても消えない
+      # （消したいときは `docker compose down -v`）
+      - db-data:/var/lib/mysql
+      - ./docker/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ./docker/mysql/initdb.d:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # 接続を受け付けられる状態になったら healthy。app はこれを待ってから起動する
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/dev/Dockerfile
+    command: bin/rails server -b 0.0.0.0 -p 3000
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_HOST: db
+      DB_USER: ${DB_USER:-user}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      # 管理者ログインのパスワード。.env に ADMIN_PASSWORD=... と書く
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      # ソースコードをマウントするので、編集はすぐ反映される（Gemfile を変えたときだけ build し直す）
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    # binding.irb や debug でコンテナ内のプロンプトを使えるようにする（docker compose attach app）
+    stdin_open: true
+    tty: true
+
+volumes:
+  db-data:
