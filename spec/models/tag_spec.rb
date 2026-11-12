@@ -9,4 +9,10 @@ RSpec.describe Tag, type: :model do
     create(:tag, tag_name: "Ruby")
     expect(Tag.new(tag_name: "Ruby")).not_to be_valid
   end
+
+  it "バリデーションを通さない書き込みでも、DB の制約で重複は防がれる（大文字小文字の違いも同じ名前扱い）" do
+    expect {
+      Tag.insert_all([ { tag_name: "Ruby" }, { tag_name: "ruby" } ])
+    }.to raise_error(ActiveRecord::RecordNotUnique)
+  end
 end
