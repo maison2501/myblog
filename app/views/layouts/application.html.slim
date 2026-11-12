@@ -12,6 +12,7 @@ html lang="ja"
     link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet"
     = stylesheet_link_tag "styles", "data-turbo-track": "reload"
     = stylesheet_link_tag "syntax", "data-turbo-track": "reload"
+    = stylesheet_link_tag "post_body", "data-turbo-track": "reload"
     - if admin?
       / 記事編集用の Markdown エディタ（ログイン中だけ読み込む）
       link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css" data-turbo-track="reload"
@@ -21,7 +22,10 @@ html lang="ja"
     nav#mainNav.navbar.navbar-expand-lg.navbar-light data-controller="navbar"
       .container.px-4.px-lg-5
         = link_to site_title, root_path, class: "navbar-brand"
-        .navbar-collapse
+        / スマホ幅ではメニューを折りたたむ
+        button.navbar-toggler type="button" aria-controls="navbarResponsive" aria-expanded="false" aria-label="メニューを開く" data-action="navbar#toggle" data-navbar-target="toggler"
+          | Menu
+        #navbarResponsive.collapse.navbar-collapse data-navbar-target="menu"
           ul.navbar-nav.ms-auto.py-4.py-lg-0
             li.nav-item = link_to "Home", root_path, class: "nav-link px-lg-3 py-3 py-lg-4"
             li.nav-item = link_to "Categories", categories_path, class: "nav-link px-lg-3 py-3 py-lg-4"

@@ -3,6 +3,8 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
+  static targets = [ "menu", "toggler" ]
+
   connect() {
     this.scrollPos = 0
     this.headerHeight = this.element.clientHeight
@@ -12,6 +14,12 @@ export default class extends Controller {
 
   disconnect() {
     window.removeEventListener("scroll", this.onScroll)
+  }
+
+  // スマホ幅でメニューを開閉する
+  toggle() {
+    const open = this.menuTarget.classList.toggle("show")
+    this.togglerTarget.setAttribute("aria-expanded", open)
   }
 
   onScroll() {

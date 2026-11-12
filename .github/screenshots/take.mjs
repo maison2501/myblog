@@ -11,7 +11,10 @@ const problems = []
 const browser = await chromium.launch()
 
 function watch(page, label) {
-  page.on("console", (msg) => { if (msg.type() === "error") problems.push(`[${label}] console: ${msg.text()}`) })
+  page.on("console", (msg) => {
+    if (msg.type() === "error") problems.push(`[${label}] console: ${msg.text()}`)
+    else console.log(`  [${label}] console.${msg.type()}: ${msg.text()}`)
+  })
   page.on("pageerror", (err) => problems.push(`[${label}] pageerror: ${err.message}`))
   page.on("requestfailed", (req) => problems.push(`[${label}] requestfailed: ${req.url()} ${req.failure()?.errorText}`))
   page.on("response", (res) => { if (res.status() >= 400) problems.push(`[${label}] HTTP ${res.status()}: ${res.url()}`) })
@@ -19,6 +22,7 @@ function watch(page, label) {
 
 async function shot(page, name, opts = {}) {
   await page.waitForLoadState("networkidle")
+  await page.waitForTimeout(600) // ナビの色の切り替えアニメーション（0.2秒）が終わるのを待つ
   await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: opts.fullPage ?? true })
   console.log(`saved ${name}.png  (${page.url()})`)
 }
@@ -83,6 +87,9 @@ async function shot(page, name, opts = {}) {
       .then(async (res) => console.log(`attach response: ${res.status()} ${await res.text()}`))
       .catch(() => problems.push("[pc-admin] 画像アップロードのリクエストが送られていない"))
     await fileInput.setInputFiles("spec/fixtures/files/screenshot-sample.png")
+    console.log(`files on input: ${await fileInput.evaluate((el) => el.files.length)}`)
+    await page.waitForTimeout(1500)
+    console.log(`status bar: ${await page.locator(".editor-statusbar").innerText()}`)
     await uploaded
     await page.waitForTimeout(1000)
     console.log(`editor text: ${JSON.stringify(await page.evaluate(() => document.querySelector(".CodeMirror").CodeMirror.getValue()))}`)
@@ -92,6 +99,9 @@ async function shot(page, name, opts = {}) {
   await shot(page, "11_pc_editor_filled")
 
   await page.click("input[type=submit][value='保存する']")
+  await page.waitForURL(/\/posts\/\d+$/).catch(() => problems.push(`[pc-admin] 投稿後に記事ページへ移動しない (${page.url()})`))
+  await page.waitForSelector(".post-body")
+  await page.evaluate(() => window.scrollTo(0, 0))
   await shot(page, "12_pc_created_post")
   const imgs = await page.locator(".post-body img").count()
   console.log(`images in created post: ${imgs}`)
@@ -114,6 +124,8 @@ async function shot(page, name, opts = {}) {
   const page = await ctx.newPage()
   watch(page, "mobile")
   await page.goto(BASE + "/");                       await shot(page, "15_mobile_index")
+  await page.click(".navbar-toggler")
+  await shot(page, "15b_mobile_menu_open", { fullPage: false })
   await page.getByRole("link", { name: "Rails 8 にアップデートした" }).first().click()
   await shot(page, "16_mobile_post_code")
   await page.goto(BASE + "/categories");             await shot(page, "17_mobile_categories")
