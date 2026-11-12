@@ -11,8 +11,9 @@ RSpec.describe Tag, type: :model do
   end
 
   it "バリデーションを通さない書き込みでも、DB の制約で重複は防がれる（大文字小文字の違いも同じ名前扱い）" do
+    create(:tag, tag_name: "Ruby")
     expect {
-      Tag.insert_all([ { tag_name: "Ruby" }, { tag_name: "ruby" } ])
+      Tag.new(tag_name: "ruby").save(validate: false)
     }.to raise_error(ActiveRecord::RecordNotUnique)
   end
 end
