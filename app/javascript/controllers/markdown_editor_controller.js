@@ -13,6 +13,12 @@ export default class extends Controller {
       spellChecker: false,
       forceSync: true,
       uploadImage: this.hasUploadUrlValue,
+      toolbar: [
+        "bold", "italic", "strikethrough", "heading", "|",
+        "quote", "unordered-list", "ordered-list", "|",
+        "link", "image", ...(this.hasUploadUrlValue ? [ "upload-image" ] : []), "code", "table", "|",
+        "preview", "side-by-side", "fullscreen", "|", "guide"
+      ],
       imageUploadFunction: (file, onSuccess, onError) => this.upload(file, onSuccess, onError)
     })
   }
