@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+# Rails アプリのコードに、よくある脆弱性（SQL インジェクション、XSS など）のパターンが無いか調べる
+require "rubygems"
+require "bundler/setup"
+
+load Gem.bin_path("brakeman", "brakeman")

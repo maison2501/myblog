@@ -19,4 +19,5 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
 
   config.include FactoryBot::Syntax::Methods
+  config.include ActiveSupport::Testing::TimeHelpers # travel_to で「時刻を進めた世界」を作る
 end

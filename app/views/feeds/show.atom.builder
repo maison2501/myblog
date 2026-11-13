@@ -7,7 +7,7 @@ atom_feed(language: "ja-JP", root_url: root_url) do |feed|
     feed.entry(post, published: post.published_at, updated: post.updated_at) do |entry|
       entry.title post.title
       entry.summary post_excerpt(post)
-      entry.content markdown(post.content), type: "html"
+      entry.content feed_html(post), type: "html"
       entry.author { |author| author.name site_title }
     end
   end

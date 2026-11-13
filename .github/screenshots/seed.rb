@@ -51,4 +51,11 @@ Post.create!(
   content: "公開前のメモ。"
 )
 
+Post.create!(
+  title: "明日公開の記事",
+  tag_names: "予約",
+  content: "予約投稿のテスト。",
+  published_at: 1.day.from_now
+)
+
 puts "seeded #{Post.count} posts, #{Tag.count} tags"

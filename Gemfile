@@ -31,6 +31,9 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   # コードの書き方のチェック（Rails 公式のルール。設定は .rubocop.yml）
   gem "rubocop-rails-omakase", require: false
+  # セキュリティの検査: コードの脆弱性（brakeman）と、脆弱性が報告されている gem（bundler-audit）
+  gem "brakeman", require: false
+  gem "bundler-audit", require: false
   gem "rspec-rails"
   gem "factory_bot_rails"
 end

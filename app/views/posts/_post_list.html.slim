@@ -7,6 +7,8 @@
       = link_to post.title, post
       - if post.draft?
         span.badge.text-bg-secondary.ms-2.align-middle.fs-6 下書き
+      - elsif post.scheduled?
+        span.badge.text-bg-info.ms-2.align-middle.fs-6 予約
     p.post-meta = l post.display_time, format: :long
   hr.my-4
 = render "posts/pager"
