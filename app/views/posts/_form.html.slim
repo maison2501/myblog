@@ -19,10 +19,15 @@
     = form.text_area :content, rows: 20, class: "form-control",
       data: { controller: "markdown-editor", markdown_editor_upload_url_value: attach_image_path }
 
-  .form-check.mb-4
+  .form-check.mb-2
     = form.check_box :publish, class: "form-check-input"
     = form.label :publish, class: "form-check-label" do
       | 公開する
       small.text-muted.ms-2 チェックを外すと下書き（ログイン中のあなたにしか見えない）
+
+  .mb-4
+    = form.label :published_at, "公開日時", class: "form-label small text-muted"
+    = form.datetime_local_field :published_at, class: "form-control", style: "max-width: 16rem"
+    .form-text 空欄なら保存した時点で公開。未来の日時にすると、その時刻まで公開されない（予約投稿）
 
   = form.submit "保存する", class: "btn btn-primary mb-4"

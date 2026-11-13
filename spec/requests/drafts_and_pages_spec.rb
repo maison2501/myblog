@@ -52,6 +52,29 @@ RSpec.describe "下書き・ページ送り・フィード・OGP", type: :reques
     end
   end
 
+  describe "予約投稿" do
+    it "管理者が未来の公開日時で投稿すると、その時刻まで他の人には見えない" do
+      login_as_admin
+      post posts_path, params: { post: { title: "明日の記事", content: "本文", publish: "1", published_at: 1.day.from_now.strftime("%Y-%m-%dT%H:%M") } }
+      scheduled = Post.find_by!(title: "明日の記事")
+      expect(scheduled).to be_scheduled
+
+      get root_path
+      expect(response.body).to include("明日の記事", "予約")
+
+      delete logout_path
+      get root_path
+      expect(response.body).not_to include("明日の記事")
+      get post_path(scheduled)
+      expect(response).to have_http_status(:not_found)
+
+      travel 2.days do
+        get root_path
+        expect(response.body).to include("明日の記事")
+      end
+    end
+  end
+
   describe "ページ送り" do
     before do
       12.times { |i| create(:post, title: "連番記事#{i + 1}", published_at: (12 - i).hours.ago) }
@@ -84,6 +107,16 @@ RSpec.describe "下書き・ページ送り・フィード・OGP", type: :reques
       expect(response.media_type).to eq "application/atom+xml"
       expect(response.body).to include("フィードに出る記事")
       expect(response.body).not_to include("フィードに出ない記事")
+    end
+
+    it "本文中の画像やリンクはドメイン付きの URL になる（フィードリーダーから辿れるように）" do
+      create(:post, content: "![猫](/rails/active_storage/blobs/redirect/abc/cat.png)\n\n[一覧](/categories) [外部](https://example.org/)")
+
+      get feed_path
+      content = Nokogiri::XML(response.body).remove_namespaces!.at_css("entry content").text
+      expect(content).to include('src="http://www.example.com/rails/active_storage/blobs/redirect/abc/cat.png"')
+      expect(content).to include('href="http://www.example.com/categories"')
+      expect(content).to include('href="https://example.org/"')
     end
 
     it "どのページにもフィードの場所が書かれている" do

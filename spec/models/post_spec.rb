@@ -77,6 +77,24 @@ RSpec.describe Post, type: :model do
       expect { post.update!(title: "直した", publish: "1") }.not_to change { post.reload.published_at }
     end
 
+    it "公開日時を未来にして「公開する」と予約投稿になり、その時刻を過ぎると公開される" do
+      post = create(:post, :draft)
+      post.update!(publish: "1", published_at: 1.day.from_now)
+      expect(post).to be_scheduled
+      expect(Post.published).not_to include(post)
+
+      travel 2.days do
+        expect(post).to be_published
+        expect(Post.published).to include(post)
+      end
+    end
+
+    it "公開日時を入れても「公開する」にチェックしなければ下書き" do
+      post = create(:post, :draft)
+      post.update!(publish: "0", published_at: 1.day.from_now)
+      expect(post).to be_draft
+    end
+
     it "recent は新しい順（下書きは作成日時で並ぶ）" do
       old = create(:post, published_at: 2.days.ago)
       new = create(:post, published_at: 1.day.ago)

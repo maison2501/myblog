@@ -66,6 +66,43 @@ jobs:
       - name: RuboCop
         run: bin/rubocop -f github
 
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Brakeman（コードの脆弱性）
+        run: bin/brakeman --no-pager --quiet
+
+      - name: bundler-audit（脆弱性のある gem）
+        run: bin/bundler-audit
+
+  # Gemfile を変えたのに Gemfile.lock を更新し忘れていないか。
+  # 古い場合は、作り直した Gemfile.lock をログに出す（手元で bundle install できないときはそれをコピーする）
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: false
+
+      - name: Gemfile.lock is up to date
+        run: |
+          bundle lock --print > /tmp/Gemfile.lock.new
+          if ! diff -u Gemfile.lock /tmp/Gemfile.lock.new; then
+            echo "::error::Gemfile.lock が Gemfile と合っていません。bundle install して Gemfile.lock をコミットしてください"
+            echo "=====BEGIN Gemfile.lock"
+            cat /tmp/Gemfile.lock.new
+            echo "=====END"
+            exit 1
+          fi
+
   cdn:
     runs-on: ubuntu-latest
     steps:

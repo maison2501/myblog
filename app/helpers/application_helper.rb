@@ -12,9 +12,32 @@ module ApplicationHelper
     page_title.blank? ? SITE_TITLE : "#{page_title} - #{SITE_TITLE}"
   end
 
+  # 記事ページの見出しの下に出す日付・状態
+  def post_status_text(post)
+    if post.draft?
+      "下書き（あなたにしか見えていません）"
+    elsif post.scheduled?
+      "#{l(post.published_at, format: :long)} に公開予定（予約投稿）"
+    else
+      l(post.published_at, format: :long)
+    end
+  end
+
   # 記事の書き出し（Markdown の記号を除いた本文の先頭）。OGP やフィードの説明文に使う
   def post_excerpt(post, length: 120)
     strip_tags(markdown(post.content)).squish.truncate(length)
+  end
+
+  # フィード用の本文 HTML。記事内の画像やリンクは "/rails/active_storage/..." のようなドメインなしのパスなので、
+  # フィードリーダー（別のサイト上で表示される）でも辿れるよう、先頭にこのブログの URL を付ける
+  def feed_html(post, base_url: request.base_url)
+    fragment = Nokogiri::HTML5.fragment(markdown(post.content))
+    fragment.css("img[src], a[href]").each do |node|
+      attr = node.name == "img" ? "src" : "href"
+      path = node[attr]
+      node[attr] = base_url + path if path.start_with?("/") && !path.start_with?("//")
+    end
+    fragment.to_html
   end
 
   # Markdown を HTML に変換する。```ruby のようなコードブロックは Rouge で色付けする

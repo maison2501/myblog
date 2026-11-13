@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# Gemfile.lock の gem に、脆弱性が報告されているバージョンが含まれていないか調べる
+# （引数なしで実行すると、脆弱性データベースを最新にしてからチェックする）
+require "rubygems"
+require "bundler/setup"
+
+ARGV.replace(%w[ check --update ]) if ARGV.empty?
+load Gem.bin_path("bundler-audit", "bundler-audit")
